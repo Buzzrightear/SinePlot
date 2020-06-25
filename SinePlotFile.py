@@ -16,11 +16,11 @@ trainingSet = []
 testSet = []
 
 # Create array of values for sine wave
-for i in range(100):
+for i in range(1000):
     trainingSet.append(math.sin(trainingSetSeedValue))
     trainingSetSeedValue += 0.1
 
-for i in range(100):
+for i in range(1000):
     testSet.append(math.sin(trainingSetSeedValue))
     trainingSetSeedValue += 0.1
 
@@ -35,7 +35,7 @@ for i in range(100):
 print(trainingSet)
 trainingSet = torch.FloatTensor(trainingSet).view(-1)
 print(trainingSet)
-train_window = 10
+train_window = 100
 def create_inout_sequences(input_data, tw):
     inout_seq = []
     L = len(input_data)
@@ -47,8 +47,6 @@ def create_inout_sequences(input_data, tw):
 
 train_inout_seq = create_inout_sequences(trainingSet, train_window)
 print(len(train_inout_seq))
-
-print(train_inout_seq[:5])
 
 class LSTM(nn.Module):
     def __init__(self, input_size=1, hidden_layer_size=100, output_size=1):
@@ -93,7 +91,7 @@ for i in range(epochs):
 print(f'epoch: {i:3} loss: {single_loss.item():10.10f}')
 
 #Make predictions
-fut_pred = 100
+fut_pred = 200
 
 test_inputs = trainingSet[-train_window:].tolist()
 print(test_inputs)
