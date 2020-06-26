@@ -20,7 +20,7 @@ for i in range(1000):
     trainingSet.append(math.sin(trainingSetSeedValue))
     trainingSetSeedValue += 0.1
 
-for i in range(1000):
+for i in range(100):
     testSet.append(math.sin(trainingSetSeedValue))
     trainingSetSeedValue += 0.1
 
