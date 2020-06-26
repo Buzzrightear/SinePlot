@@ -1,4 +1,7 @@
-# SinePlot
-## Attempt to plot a sine wave using a dataset generated on the fly
+# SinePlot 
+## Range of attempts to plot a sine wave using a dataset generated on the fly and machine learning techniques
 
->Mostly an exercise in re-learning python/pycharm/github
+>SinePlot_RNN.py - Plots output of recurrent neural network applied to sine dataset 
+>SinePlot_Simple_Moving_Average.py - Plots simple moving average with 2x dwindow sizes applied to sine dataset
+
+
