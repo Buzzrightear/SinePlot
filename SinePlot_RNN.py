@@ -1,5 +1,3 @@
-# Author: Henry Stanton
-# Date created: 16/06/2020
 #Taken from https://stackabuse.com/time-series-prediction-using-lstm-with-pytorch-in-python/
 
 import math
