@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import matplotlib
+
+matplotlib.use('Agg') #https://stackoverflow.com/questions/37604289/tkinter-tclerror-no-display-name-and-no-display-environment-variable 
 import matplotlib.pyplot as plt
 import math
 
