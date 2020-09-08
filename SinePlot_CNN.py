@@ -11,6 +11,7 @@ import pandas as pd
 from numpy import array
 
 
+#CNN requires data preprocessing
 # split a univariate sequence into samples
 def split_sequence(sequence, n_steps):
 	X, y = list(), list()
@@ -45,11 +46,35 @@ for i in range(100):
 
 # choose a number of time steps
 n_steps = 10
+
+#Number of features - 1 because with univariate sequence, we just have the one variable (I think this relates to efectively having a single value input)
+n_features = 1
+
 # split into samples
 X, y = split_sequence(raw_seq, n_steps)
 # summarize the data
-for i in range(len(X)):
-	print(X[i], y[i])
+#for i in range(len(X)):
+#	print('Sample number ' + str(i) + ':', X[i], y[i])
 
 
+# define model
+model = Sequential()
+model.add(Conv1D(filters=64, kernel_size=2, activation='relu', input_shape=(n_steps, n_features)))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(50, activation='relu'))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mse') 
+#'The model is fit using the efficient Adam version of stochastic gradient descent and optimized using the mean squared error, or mse, loss function.'
+#https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/ 
 
+# reshape from [samples, timesteps] into [samples, timesteps, features] - we have multiple samples, so input data needs to include number of variables/features being supplied/expected
+X = X.reshape((X.shape[0], X.shape[1], n_features))
+
+# We have created the structure of the model so now we have to fit the model to our training dataset
+model.fit(X, y, epochs=1000, verbose=0)
+
+# demonstrate prediction
+x_input = array(testSet)
+x_input = x_input.reshape((1, n_steps, n_features)) #Suggests a single sample of 10 steps?
+yhat = model.predict(x_input, verbose=0)
