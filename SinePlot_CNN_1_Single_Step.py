@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Flatten
+from keras.layers.convolutional import Conv1D
+from keras.layers.convolutional import MaxPooling1D
+
 # univariate data preparation
 from numpy import array
 
@@ -33,19 +39,21 @@ raw_seq_SeedValue = 0.083
 raw_seq = []
 testSet = []
 
+# choose a number of time steps for each sample
+n_steps = 100
+
 # Create array of values for sine wave
 for i in range(1000):
     raw_seq.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
 
-for i in range(100):
+for i in range(n_steps):
     testSet.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
 
  
 
-# choose a number of time steps
-n_steps = 10
+
 
 #Number of features - 1 because with univariate sequence, we just have the one variable (I think this relates to efectively having a single value input)
 n_features = 1
@@ -76,5 +84,8 @@ model.fit(X, y, epochs=1000, verbose=0)
 
 # demonstrate prediction
 x_input = array(testSet)
-x_input = x_input.reshape((1, n_steps, n_features)) #Suggests a single sample of 10 steps?
+x_input = x_input.reshape((1, n_steps, n_features)) #Suggests a single sample of n_steps?
 yhat = model.predict(x_input, verbose=0)
+print (x_input)
+print(yhat)
+
