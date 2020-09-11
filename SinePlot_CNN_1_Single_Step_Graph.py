@@ -17,24 +17,24 @@ from keras.layers.convolutional import MaxPooling1D
 
 # univariate data preparation
 from numpy import array
- 
-# split a univariate sequence into samples for multistep prediction
-def split_sequence(sequence, n_steps_in, n_steps_out):
+
+
+#CNN requires data preprocessing
+# split a univariate sequence into samples
+def split_sequence(sequence, n_steps):
 	X, y = list(), list()
 	for i in range(len(sequence)):
 		# find the end of this pattern
-		end_ix = i + n_steps_in
-		out_end_ix = end_ix + n_steps_out
+		end_ix = i + n_steps
 		# check if we are beyond the sequence
-		if out_end_ix > len(sequence):
+		if end_ix > len(sequence)-1:
 			break
 		# gather input and output parts of the pattern
-		seq_x, seq_y = sequence[i:end_ix], sequence[end_ix:out_end_ix]
+		seq_x, seq_y = sequence[i:end_ix], sequence[end_ix]
 		X.append(seq_x)
 		y.append(seq_y)
-	return array(X), array(y) 
+	return array(X), array(y)
  
- #Sort input sequence:
 raw_seq_SeedValue = 0.083
 
 # define input sequence
@@ -42,23 +42,26 @@ raw_seq = []
 testSet = []
 
 # choose a number of time steps for each sample
-n_steps_in = 30
-n_steps_out = 20
+n_steps = 100
 
 # Create array of values for sine wave
 for i in range(1000):
     raw_seq.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
 
-for i in range(1000):
+for i in range(n_steps):
     testSet.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
+
+ 
+
+
 
 #Number of features - 1 because with univariate sequence, we just have the one variable (I think this relates to efectively having a single value input)
 n_features = 1
 
 # split into samples
-X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
+X, y = split_sequence(raw_seq, n_steps)
 # summarize the data
 #for i in range(len(X)):
 #	print('Sample number ' + str(i) + ':', X[i], y[i])
