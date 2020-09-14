@@ -54,40 +54,44 @@ for i in range(1000):
     testSet.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
 
-#Number of features - 1 because with univariate sequence, we just have the one variable (I think this relates to efectively having a single value input)
-n_features = 1
-
 # split into samples
 X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
-# summarize the data
-#for i in range(len(X)):
-#	print('Sample number ' + str(i) + ':', X[i], y[i])
+testSet = split_sequence(testSet, n_steps_in, n_steps_out)
 
-
-# define model
-model = Sequential()
-model.add(Conv1D(filters=64, kernel_size=2, activation='relu', input_shape=(n_steps, n_features)))
-model.add(MaxPooling1D(pool_size=2))
-model.add(Flatten())
-model.add(Dense(50, activation='relu'))
-model.add(Dense(1))
-model.compile(optimizer='adam', loss='mse') 
-#'The model is fit using the efficient Adam version of stochastic gradient descent and optimized using the mean squared error, or mse, loss function.'
-#https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/ 
+#Number of features - 1 because with univariate sequence, we just have the one variable (I think this relates to efectively having a single value input)
+n_features = 1
 
 # reshape from [samples, timesteps] into [samples, timesteps, features] - we have multiple samples, so input data needs to include number of variables/features being supplied/expected
 X = X.reshape((X.shape[0], X.shape[1], n_features))
 
+
+# define model
+model = Sequential()
+model.add(Conv1D(filters=64, kernel_size=2, activation='relu', input_shape=(n_steps_in, n_features)))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(50, activation='relu'))
+model.add(Dense(n_steps_out))
+model.compile(optimizer='adam', loss='mse') 
+#'The model is fit using the efficient Adam version of stochastic gradient descent and optimized using the mean squared error, or mse, loss function.'
+#https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/ 
+
+
+
 # We have created the structure of the model so now we have to fit the model to our training dataset
-model.fit(X, y, epochs=1000, verbose=0)
+model.fit(X, y, epochs=2000, verbose=0)
 
 # demonstrate prediction
 x_input = array(testSet)
-x_input = x_input.reshape((1, n_steps, n_features)) #Suggests a single sample of n_steps?
+x_input = x_input.reshape((1, n_steps_in, n_features)) #Suggests a single sample of n_steps?
 yhat = model.predict(x_input, verbose=0)
+
+
 print (x_input)
 print(yhat)
 
+
+# Put in graph:
 x_input_list = []
 for i in x_input:
     for j in i:
@@ -95,9 +99,10 @@ for i in x_input:
             x_input_list.append(k)
 
 prediction_list = []
-for i in range(len(x_input_list)-1):
+for i in range(len(x_input_list)-len(yhat)):
     prediction_list.append(None)
-prediction_list.append(yhat[0][0])
+for i in yhat:
+    prediction_list.append(i[0])
 
 #pg.s([x_input_list, yhat], filename='CNN_output.out')  # save data into a file
 pg.s([x_input_list, prediction_list], filename='CNN_output.out')  # save data into a file
