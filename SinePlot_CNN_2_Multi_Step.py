@@ -50,13 +50,13 @@ for i in range(1000):
     raw_seq.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
 
-for i in range(1000):
+raw_seq_SeedValue = 0.013
+for i in range(n_steps_in):
     testSet.append(math.sin(raw_seq_SeedValue))
     raw_seq_SeedValue += 0.1
 
 # split into samples
 X, y = split_sequence(raw_seq, n_steps_in, n_steps_out)
-testSet = split_sequence(testSet, n_steps_in, n_steps_out)
 
 #Number of features - 1 because with univariate sequence, we just have the one variable (I think this relates to efectively having a single value input)
 n_features = 1
@@ -75,9 +75,6 @@ model.add(Dense(n_steps_out))
 model.compile(optimizer='adam', loss='mse') 
 #'The model is fit using the efficient Adam version of stochastic gradient descent and optimized using the mean squared error, or mse, loss function.'
 #https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/ 
-
-
-
 # We have created the structure of the model so now we have to fit the model to our training dataset
 model.fit(X, y, epochs=2000, verbose=0)
 
@@ -87,26 +84,32 @@ x_input = x_input.reshape((1, n_steps_in, n_features)) #Suggests a single sample
 yhat = model.predict(x_input, verbose=0)
 
 
-print (x_input)
-print(yhat)
+print ("x_input is ", x_input)
+print("yhat prediction is " , yhat)
 
 
 # Put in graph:
+#Parse x_input into 1D list - x_input_list
 x_input_list = []
 for i in x_input:
     for j in i:
         for k in j:
             x_input_list.append(k)
 
+#Parse prediction sequence into 1D list - prediction_list
 prediction_list = []
 for i in range(len(x_input_list)-len(yhat)):
-    prediction_list.append(None)
+    prediction_list.append(None) #So that values appear to continue on from x_input sequence, populate list with None for length of x_input
 for i in yhat:
-    prediction_list.append(i[0])
+    for j in i:
+        prediction_list.append(j) #Then append values from prediction sequence yhat on it
 
-#pg.s([x_input_list, yhat], filename='CNN_output.out')  # save data into a file
+for i in range(len(prediction_list)):
+    x_input_list.append(None) #In order for GNUPlot to parse output file correctly, x_input_list needs None values appending to it to make it same length as prediction_list, 
+
+
 pg.s([x_input_list, prediction_list], filename='CNN_output.out')  # save data into a file
-pg.c('set title "CNN_output"; set xlabel "x-axis"; set ylabel "y-axis"')
-pg.c('set key center top')
+pg.c('set title "CNN Output"; set xlabel "x-axis"; set ylabel "y-axis"')
+#pg.c('set key center top')
 pg.c("plot 'CNN_output.out' u 1 t 'x\_input = Test Set'")  # plot test set
 pg.c("replot  'CNN_output.out' u 2  t 'yhat = Predicted value'")
